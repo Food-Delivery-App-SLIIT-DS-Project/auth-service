@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  rpc SignUp(SignUpRequest) returns (AuthResponse);
+  rpc SignIn(SignInRequest) returns (AuthResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (AuthResponse);
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+}
+
+message SignUpRequest {
+  string fullName = 1;
+  string email = 2;
+  string phoneNumber = 3;
+  string password = 4;
+  string role = 5;
+}
+
+message AuthResponse {
+  string accessToken = 1;
+  string refreshToken = 2;
+  User user = 3; // optional embedded or imported
+}
+
+message User {
+  string userId = 1;
+  string fullName = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string role = 5;
+}
+
+message SignInRequest {
+  string email = 1;
+  string password = 2;
+}
+message RefreshTokenRequest {
+  string refreshToken = 1;
+}
+message VerifyTokenRequest {
+  string token = 1;
+}
+message VerifyTokenResponse {
+  bool isValid = 1;
+}
+message LogoutRequest {
+  string refreshToken = 1;
+}
+message LogoutResponse {
+  bool success = 1;
+}
+message ChangePasswordRequest {
+  string userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+message ChangePasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
+message ForgotPasswordRequest {
+  string email = 1;
+}
+message ForgotPasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
