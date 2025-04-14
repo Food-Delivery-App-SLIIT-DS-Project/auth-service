@@ -10,7 +10,26 @@ service UserService{
     rpc DeleteUser(FineOneUserDto) returns (UserResponse){}
     rpc VerifyUser(FineOneUserDto) returns (UserResponse){}
     rpc findUserByEmail(FindUserByEmailDto) returns (UserResponse){}
+    rpc DeleteRefreshToken(DeleteRefreshTokenRequest) returns (DeleteRefreshTokenResponse);
+    rpc updateRefreshToken(UpdateRefreshTokenRequest) returns (UpdateRefreshTokenResponse);
 }
+
+message UpdateRefreshTokenRequest {
+    string user_id = 1;
+    string refresh_token = 2;
+}
+message UpdateRefreshTokenResponse{
+    string refresh_token = 1;
+}
+
+message DeleteRefreshTokenRequest {
+    string user_id = 1;
+    string refresh_token = 2;
+}
+message DeleteRefreshTokenResponse{
+    bool success = 1;
+}
+
 message FindUserByEmailDto{
     string email = 1;
 }
@@ -31,6 +50,7 @@ message CreateUserDto{
     string password_hash = 4;
     string role = 5; // 'customer', 'delivery_personnel', 'restaurant'
     string is_verified = 6; // 'pending', 'verified', 'rejected'
+    string refresh_token = 7;
 }
 message UpdateUserDto{
     string user_id = 1;

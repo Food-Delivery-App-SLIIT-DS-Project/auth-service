@@ -49,6 +49,7 @@ message VerifyTokenResponse {
 }
 message LogoutRequest {
   string refreshToken = 1;
+  string userId = 2;
 }
 message LogoutResponse {
   bool success = 1;

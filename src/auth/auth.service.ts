@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -6,14 +7,18 @@ import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
 import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import * as bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
-  CreateUserDto,
   USER_SERVICE_NAME,
   UserResponse,
   UserServiceClient,
 } from '../common/types'; // path based on your proto-gen output
-import { AuthResponse, SignUpRequest } from 'src/common/types/auth';
+import {
+  AuthResponse,
+  LogoutResponse,
+  SignUpRequest,
+} from 'src/common/types/auth';
 import { JwtService } from './services/jwt.service';
 import { status } from '@grpc/grpc-js';
 
@@ -31,31 +36,39 @@ export class AuthService implements OnModuleInit {
   }
 
   async signUp(data: SignUpRequest): Promise<AuthResponse> {
-    console.log('authservice signup function', data);
+ 
     const { fullName, email, phoneNumber, password, role } = data;
     const passwordHash = await bcrypt.hash(password, 10); // Hash the password
 
-    console.log('passwordHash', passwordHash);
-    const userPayload: CreateUserDto = {
+    const userId = uuidv4();
+
+    /// genarate refresh toke 0----------------------------------
+    const accessToken = this.jwtService.signAccessToken({
+      userId,
+      role,
+    });
+    const refreshToken = this.jwtService.signRefreshToken({
+      userId,
+    });
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    //------------------ user payload--------------------
+    const userPayload = {
+      userId,
       fullName,
       email,
       phoneNumber,
       passwordHash: passwordHash, // Hash the password
       role,
-      isVerified: 'pending', // Default to pending
+      isVerified: 'pending',
+      refreshToken: hashedRefreshToken,
     };
+
+
 
     // 3. Call user-service to create user
     const newuser: UserResponse = await lastValueFrom(
       this.userServiceClient.createUser(userPayload),
     );
-    const accessToken = this.jwtService.signAccessToken({
-      userId: newuser.userId,
-      role: newuser.role,
-    });
-    const refreshToken = this.jwtService.signRefreshToken({
-      userId: newuser.userId,
-    });
 
     const authResponse: AuthResponse = {
       accessToken: accessToken,
@@ -117,7 +130,21 @@ export class AuthService implements OnModuleInit {
       userId: user.userId,
     });
 
-    // 5. Return tokens and user info (excluding passwordHash)
+    // update refresh token in the database
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    const updateUserResponse = await lastValueFrom(
+      this.userServiceClient.updateRefreshToken({
+        refreshToken: hashedRefreshToken,
+        userId: user.userId,
+      }),
+    );
+    if (!updateUserResponse) {
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: 'token update failed',
+      });
+    }
+    //  Return tokens and user info (excluding passwordHash)
     return {
       accessToken,
       refreshToken,
@@ -132,5 +159,48 @@ export class AuthService implements OnModuleInit {
         updatedAt: user.updatedAt,
       },
     };
+  }
+
+  //------------------------- logout-------------------------
+  async logout(refreshToken: string, userId:string): Promise<LogoutResponse> {
+    console.log('auth service logout function');
+    try {
+      
+      // Verify the refresh token
+      const payload = this.jwtService.verifyRefreshToken(refreshToken);
+      if (!payload) {
+        throw new RpcException({
+          code: status.UNAUTHENTICATED,
+          message: 'Invalid refresh token',
+        });
+      }
+      // const user = await this.userService.findById(userId);
+
+      // delete the refresh token from the database
+  
+      const deleteUserResponse = await lastValueFrom(
+        this.userServiceClient.deleteRefreshToken({
+          userId,
+          refreshToken,
+        }),
+      );
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      console.log(deleteUserResponse);
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      if (!deleteUserResponse || !deleteUserResponse.success) {
+        throw new RpcException({
+          code: status.INTERNAL,
+          message: 'token deletion failed',
+        });
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw new RpcException({
+        code: status.UNAUTHENTICATED,
+        message: 'Logout failed',
+      });
+    }
   }
 }

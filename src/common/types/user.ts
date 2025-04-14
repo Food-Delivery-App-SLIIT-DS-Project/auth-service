@@ -10,6 +10,24 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "user";
 
+export interface UpdateRefreshTokenRequest {
+  userId: string;
+  refreshToken: string;
+}
+
+export interface UpdateRefreshTokenResponse {
+  refreshToken: string;
+}
+
+export interface DeleteRefreshTokenRequest {
+  userId: string;
+  refreshToken: string;
+}
+
+export interface DeleteRefreshTokenResponse {
+  success: boolean;
+}
+
 export interface FindUserByEmailDto {
   email: string;
 }
@@ -38,6 +56,7 @@ export interface CreateUserDto {
   role: string;
   /** 'pending', 'verified', 'rejected' */
   isVerified: string;
+  refreshToken: string;
 }
 
 export interface UpdateUserDto {
@@ -76,6 +95,10 @@ export interface UserServiceClient {
   verifyUser(request: FineOneUserDto): Observable<UserResponse>;
 
   findUserByEmail(request: FindUserByEmailDto): Observable<UserResponse>;
+
+  deleteRefreshToken(request: DeleteRefreshTokenRequest): Observable<DeleteRefreshTokenResponse>;
+
+  updateRefreshToken(request: UpdateRefreshTokenRequest): Observable<UpdateRefreshTokenResponse>;
 }
 
 export interface UserServiceController {
@@ -92,6 +115,14 @@ export interface UserServiceController {
   verifyUser(request: FineOneUserDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
 
   findUserByEmail(request: FindUserByEmailDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  deleteRefreshToken(
+    request: DeleteRefreshTokenRequest,
+  ): Promise<DeleteRefreshTokenResponse> | Observable<DeleteRefreshTokenResponse> | DeleteRefreshTokenResponse;
+
+  updateRefreshToken(
+    request: UpdateRefreshTokenRequest,
+  ): Promise<UpdateRefreshTokenResponse> | Observable<UpdateRefreshTokenResponse> | UpdateRefreshTokenResponse;
 }
 
 export function UserServiceControllerMethods() {
@@ -104,6 +135,8 @@ export function UserServiceControllerMethods() {
       "deleteUser",
       "verifyUser",
       "findUserByEmail",
+      "deleteRefreshToken",
+      "updateRefreshToken",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
