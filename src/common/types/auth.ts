@@ -33,7 +33,7 @@ export interface User {
   role: string;
   isVerified: string;
   createdAt: string;
-  updatedAt: string
+  updatedAt: string;
 }
 
 export interface SignInRequest {
