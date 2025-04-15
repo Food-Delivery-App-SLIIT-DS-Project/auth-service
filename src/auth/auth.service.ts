@@ -10,6 +10,7 @@ import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  CreateUserDto,
   USER_SERVICE_NAME,
   UserResponse,
   UserServiceClient,
@@ -36,13 +37,13 @@ export class AuthService implements OnModuleInit {
   }
 
   async signUp(data: SignUpRequest): Promise<AuthResponse> {
- 
     const { fullName, email, phoneNumber, password, role } = data;
     const passwordHash = await bcrypt.hash(password, 10); // Hash the password
 
     const userId = uuidv4();
 
     /// genarate refresh toke 0----------------------------------
+    console.log('userId-------------', userId);
     const accessToken = this.jwtService.signAccessToken({
       userId,
       role,
@@ -52,7 +53,7 @@ export class AuthService implements OnModuleInit {
     });
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     //------------------ user payload--------------------
-    const userPayload = {
+    const userPayload:CreateUserDto = {
       userId,
       fullName,
       email,
@@ -62,8 +63,6 @@ export class AuthService implements OnModuleInit {
       isVerified: 'pending',
       refreshToken: hashedRefreshToken,
     };
-
-
 
     // 3. Call user-service to create user
     const newuser: UserResponse = await lastValueFrom(
@@ -162,13 +161,13 @@ export class AuthService implements OnModuleInit {
   }
 
   //------------------------- logout-------------------------
-  async logout(refreshToken: string, userId:string): Promise<LogoutResponse> {
+  async logout(refreshToken: string, userId: string): Promise<LogoutResponse> {
     console.log('auth service logout function');
     try {
-      
       // Verify the refresh token
       const payload = this.jwtService.verifyRefreshToken(refreshToken);
       if (!payload) {
+        console.log('Invalid refresh token');
         throw new RpcException({
           code: status.UNAUTHENTICATED,
           message: 'Invalid refresh token',
@@ -177,7 +176,7 @@ export class AuthService implements OnModuleInit {
       // const user = await this.userService.findById(userId);
 
       // delete the refresh token from the database
-  
+
       const deleteUserResponse = await lastValueFrom(
         this.userServiceClient.deleteRefreshToken({
           userId,
@@ -186,8 +185,11 @@ export class AuthService implements OnModuleInit {
       );
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       console.log(deleteUserResponse);
+
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       if (!deleteUserResponse || !deleteUserResponse.success) {
+        console.log('Token deletion failed');
+
         throw new RpcException({
           code: status.INTERNAL,
           message: 'token deletion failed',

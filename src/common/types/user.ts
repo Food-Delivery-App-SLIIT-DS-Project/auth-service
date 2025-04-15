@@ -5,10 +5,10 @@
 // source: proto/user.proto
 
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
 
-export const protobufPackage = "user";
+export const protobufPackage = 'user';
 
 export interface UpdateRefreshTokenRequest {
   userId: string;
@@ -32,8 +32,7 @@ export interface FindUserByEmailDto {
   email: string;
 }
 
-export interface Empty {
-}
+export interface Empty {}
 
 export interface UserList {
   users: UserResponse[];
@@ -48,6 +47,7 @@ export interface VerifyOneUserDto {
 }
 
 export interface CreateUserDto {
+  userId: string;
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -79,7 +79,7 @@ export interface UserResponse {
   passwordHash: string;
 }
 
-export const USER_PACKAGE_NAME = "user";
+export const USER_PACKAGE_NAME = 'user';
 
 export interface UserServiceClient {
   createUser(request: CreateUserDto): Observable<UserResponse>;
@@ -96,58 +96,96 @@ export interface UserServiceClient {
 
   findUserByEmail(request: FindUserByEmailDto): Observable<UserResponse>;
 
-  deleteRefreshToken(request: DeleteRefreshTokenRequest): Observable<DeleteRefreshTokenResponse>;
-
-  updateRefreshToken(request: UpdateRefreshTokenRequest): Observable<UpdateRefreshTokenResponse>;
-}
-
-export interface UserServiceController {
-  createUser(request: CreateUserDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
-
-  findAllUsers(request: Empty): Promise<UserList> | Observable<UserList> | UserList;
-
-  findUserById(request: FineOneUserDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
-
-  updateUser(request: UpdateUserDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
-
-  deleteUser(request: FineOneUserDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
-
-  verifyUser(request: FineOneUserDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
-
-  findUserByEmail(request: FindUserByEmailDto): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
-
   deleteRefreshToken(
     request: DeleteRefreshTokenRequest,
-  ): Promise<DeleteRefreshTokenResponse> | Observable<DeleteRefreshTokenResponse> | DeleteRefreshTokenResponse;
+  ): Observable<DeleteRefreshTokenResponse>;
 
   updateRefreshToken(
     request: UpdateRefreshTokenRequest,
-  ): Promise<UpdateRefreshTokenResponse> | Observable<UpdateRefreshTokenResponse> | UpdateRefreshTokenResponse;
+  ): Observable<UpdateRefreshTokenResponse>;
+}
+
+export interface UserServiceController {
+  createUser(
+    request: CreateUserDto,
+  ): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  findAllUsers(
+    request: Empty,
+  ): Promise<UserList> | Observable<UserList> | UserList;
+
+  findUserById(
+    request: FineOneUserDto,
+  ): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  updateUser(
+    request: UpdateUserDto,
+  ): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  deleteUser(
+    request: FineOneUserDto,
+  ): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  verifyUser(
+    request: FineOneUserDto,
+  ): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  findUserByEmail(
+    request: FindUserByEmailDto,
+  ): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+
+  deleteRefreshToken(
+    request: DeleteRefreshTokenRequest,
+  ):
+    | Promise<DeleteRefreshTokenResponse>
+    | Observable<DeleteRefreshTokenResponse>
+    | DeleteRefreshTokenResponse;
+
+  updateRefreshToken(
+    request: UpdateRefreshTokenRequest,
+  ):
+    | Promise<UpdateRefreshTokenResponse>
+    | Observable<UpdateRefreshTokenResponse>
+    | UpdateRefreshTokenResponse;
 }
 
 export function UserServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      "createUser",
-      "findAllUsers",
-      "findUserById",
-      "updateUser",
-      "deleteUser",
-      "verifyUser",
-      "findUserByEmail",
-      "deleteRefreshToken",
-      "updateRefreshToken",
+      'createUser',
+      'findAllUsers',
+      'findUserById',
+      'updateUser',
+      'deleteUser',
+      'verifyUser',
+      'findUserByEmail',
+      'deleteRefreshToken',
+      'updateRefreshToken',
     ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("UserService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('UserService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("UserService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('UserService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const USER_SERVICE_NAME = "UserService";
+export const USER_SERVICE_NAME = 'UserService';

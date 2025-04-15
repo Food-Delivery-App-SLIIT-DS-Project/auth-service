@@ -13,7 +13,7 @@ async function bootstrap() {
       options: {
         protoPath: join(__dirname, '../auth.proto'),
         package: AUTH_PACKAGE_NAME,
-        url: '0.0.0.0:50051',
+        url: 'localhost:50051', // 0.0.0.0
       },
     },
   );
