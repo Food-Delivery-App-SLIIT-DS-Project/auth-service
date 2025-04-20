@@ -16,6 +16,8 @@ export interface SignUpRequest {
   phoneNumber: string;
   password: string;
   role: string;
+  /** optional */
+  fcmToken?: string | undefined;
 }
 
 export interface AuthResponse {
@@ -31,7 +33,7 @@ export interface User {
   email: string;
   phoneNumber: string;
   role: string;
-  isVerified: string;
+  isVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -39,6 +41,8 @@ export interface User {
 export interface SignInRequest {
   email: string;
   password: string;
+  /** optional */
+  fcmToken?: string | undefined;
 }
 
 export interface RefreshTokenRequest {

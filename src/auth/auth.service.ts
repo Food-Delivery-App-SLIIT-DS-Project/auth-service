@@ -53,15 +53,16 @@ export class AuthService implements OnModuleInit {
     });
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     //------------------ user payload--------------------
-    const userPayload:CreateUserDto = {
+    const userPayload: CreateUserDto = {
       userId,
       fullName,
       email,
       phoneNumber,
       passwordHash: passwordHash, // Hash the password
       role,
-      isVerified: 'pending',
+      isVerified: false,
       refreshToken: hashedRefreshToken,
+      fcmToken: data.fcmToken ?? null,
     };
 
     // 3. Call user-service to create user
