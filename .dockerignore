@@ -1,5 +1,9 @@
 node_modules
-dist
-
 .git
 Dockerfile
+*.log
+.env.local
+*.md
+tests
+coverage
+dist
