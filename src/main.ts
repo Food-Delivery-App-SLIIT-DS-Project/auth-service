@@ -10,7 +10,7 @@ async function bootstrap() {
   const url = process.env.AUTH_SERVICE_URL || 'localhost:50051';
 
   const protoPath =
-    process.env.GRPC_PROTO_PATH || join(__dirname, '../auth.proto');
+    process.env.GRPC_PROTO_PATH || join(__dirname, '../proto/auth.proto');
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
