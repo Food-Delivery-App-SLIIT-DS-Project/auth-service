@@ -17,8 +17,8 @@ import { JwtService } from './services/jwt.service';
         transport: Transport.GRPC,
         options: {
           package: USER_PACKAGE_NAME,
-          protoPath: join(__dirname, '..', '..', 'user.proto'),
-          url: 'user-service:50052', // <-- this is where user-service is running
+          protoPath: join(__dirname, '..', '..', 'proto/user.proto'),
+          url: 'localhost:50052', // <-- this is where user-service is running #user-service
         },
       },
     ]),
