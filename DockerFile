@@ -20,7 +20,7 @@ RUN npm ci --omit=dev
 
 # Only copy the built files
 COPY --from=builder /app/dist ./dist
-COPY .env .env
+# COPY .env .env
 
 # Optional: Clean up cache
 RUN npm cache clean --force
