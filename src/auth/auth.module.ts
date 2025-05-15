@@ -18,7 +18,7 @@ import { JwtService } from './services/jwt.service';
         options: {
           package: USER_PACKAGE_NAME,
           protoPath: join(__dirname, '..', '..', 'proto/user.proto'),
-          url: 'localhost:50052', // <-- this is where user-service is running #user-service
+          url: process.env.USER_SERVICE_URL || 'localhost:50051', // <-- this is where user-service is running #user-service
         },
       },
     ]),
