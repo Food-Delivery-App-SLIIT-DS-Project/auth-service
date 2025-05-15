@@ -43,7 +43,7 @@ export class AuthService implements OnModuleInit {
     const userId = uuidv4();
 
     /// genarate refresh toke 0----------------------------------
-    console.log('userId-------------', userId);
+    // console.log('userId-------------', userId);
     const accessToken = this.jwtService.signAccessToken({
       userId,
       role,
@@ -91,8 +91,8 @@ export class AuthService implements OnModuleInit {
   //------------------------- signin-------------------------
   async signIn(email: string, password: string): Promise<AuthResponse> {
     let user: UserResponse;
-    console.log('email', email);
-    console.log('password', password);
+    // console.log('email', email);
+    // console.log('password', password);
     try {
       // 1. Call user-service to find user by email
       user = await lastValueFrom(
@@ -108,18 +108,18 @@ export class AuthService implements OnModuleInit {
       // 2b. Other gRPC error
       throw error;
     }
-    console.log('user-------', user);
+    // console.log('user-------', user);
     // 3. Check password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    console.log('isPasswordValid', isPasswordValid);
+    // console.log('isPasswordValid', isPasswordValid);
     if (!isPasswordValid) {
-      console.log('Invalid credentials');
+      // console.log('Invalid credentials');
       throw new RpcException({
         code: status.UNAUTHENTICATED,
         message: 'Invalid credentials',
       });
     }
-    console.log('user found');
+    // console.log('user found');
     // 4. Generate JWT tokens
     const accessToken = this.jwtService.signAccessToken({
       userId: user.userId,
@@ -163,12 +163,12 @@ export class AuthService implements OnModuleInit {
 
   //------------------------- logout-------------------------
   async logout(refreshToken: string, userId: string): Promise<LogoutResponse> {
-    console.log('auth service logout function');
+    // console.log('auth service logout function');
     try {
       // Verify the refresh token
       const payload = this.jwtService.verifyRefreshToken(refreshToken);
       if (!payload) {
-        console.log('Invalid refresh token');
+        // console.log('Invalid refresh token');
         throw new RpcException({
           code: status.UNAUTHENTICATED,
           message: 'Invalid refresh token',
@@ -185,11 +185,11 @@ export class AuthService implements OnModuleInit {
         }),
       );
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      console.log(deleteUserResponse);
+      // console.log(deleteUserResponse);
 
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       if (!deleteUserResponse || !deleteUserResponse.success) {
-        console.log('Token deletion failed');
+        // console.log('Token deletion failed');
 
         throw new RpcException({
           code: status.INTERNAL,

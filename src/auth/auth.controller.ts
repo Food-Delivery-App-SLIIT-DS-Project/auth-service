@@ -18,14 +18,14 @@ export class AuthGrpcController {
 
   @GrpcMethod('AuthService', 'SignUp')
   async signUp(data: SignUpRequest): Promise<AuthResponse> {
-    console.log('auth grpc controller signUp');
+    // console.log('auth grpc controller signUp');
     return this.authService.signUp(data);
   }
 
   // signin controller ---------------
   @GrpcMethod('AuthService', 'SignIn')
   async signIn(data: SignUpRequest): Promise<AuthResponse> {
-    console.log('auth grpc controller signIn');
+    // console.log('auth grpc controller signIn');
     const { email, password } = data;
     return this.authService.signIn(email, password);
   }
@@ -34,9 +34,9 @@ export class AuthGrpcController {
   @GrpcMethod('AuthService', 'Logout')
   // eslint-disable-next-line @typescript-eslint/require-await
   async logout(data: LogoutRequest): Promise<LogoutResponse> {
-    console.log('auth grpc controller logout');
+    // console.log('auth grpc controller logout');
     const { refreshToken, userId } = data;
-    console.log('dataooooooooooooooo', userId);
+    // console.log('dataooooooooooooooo', userId);
     return this.authService.logout(refreshToken, userId);
   }
 }
