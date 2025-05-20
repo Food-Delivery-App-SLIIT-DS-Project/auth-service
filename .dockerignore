@@ -1,9 +1,2 @@
 node_modules
-.git
-Dockerfile
-*.log
-.env.local
-*.md
-tests
-coverage
 dist
